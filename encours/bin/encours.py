@@ -33,12 +33,13 @@ def debug(msg):
     sys.stderr.write(msg+"\n")
 
 
-DEFAULT_INPUT = r"../input/"
+DEFAULT_INPUT = r"../../../data/input/"
 
 class Encours():
 
     def __init__(self, filename=DEFAULT_INPUT+"fi59", encoding="latin1"):
-        """Crée un objet à partir d'un fichier de synergy"""
+        """Crée un objet à partir d'un fichier de synergy."""
+        
         self.modified = False
         self.filename = filename
         with open(filename, encoding=encoding) as f:
@@ -126,21 +127,21 @@ est contenu dans une des liges du cas"""
     def chercher_texte(self,mot):
         """Cherche les indice contenant un mot"""
         return self._chercher_indices_contenant_mot(mot, type='simple')
+
     def get_resume_de_recherche_avec_regex(self, regex,label='',limit = 20):
         """Résumé de recherche avec regex"""
         buf=[]
-        attendus = a.chercher_regex(regex)
+        attendus = self.chercher_regex(regex)
         buf.append(label)
         buf.append("J'ai trouvé {n} cas avec la regex {reg}".format(n=str(len(attendus)),
                                                            reg=regex))
-        
         if len(attendus) <= limit:
             for cas in attendus:
-                buf.append(a.get_resume_cas(cas))
+                buf.append(self.get_id_nom(cas))
         else:
             buf.append("Extrait des {} premiers dossiers :".format(str(limit)))
             for cas in list(attendus)[0:20]:
-                buf.append(a.get_resume_cas(cas))
+                buf.append(self.get_id_nom(cas))
             buf.append("... suite ...")
         return buf
     
@@ -162,14 +163,23 @@ est contenu dans une des liges du cas"""
         for i in range(len(self.cas[indice_cas])):
             print(self.cas[indice_cas][i],end=None)
 
-    def get_resume_cas(self,indice_cas):
+
+    def get_id_nom(self,indice_cas):
         """retourne la première ligne du cas avec num de dossier et nom"""
         for line in self.cas[indice_cas]:
             if 'Acc :' in line:
                 return line
+            
+    def get_cor_du_cas(self, indice_cas):
+        """Retourne le correspondant.
+"""
+        for line in self.cas[indice_cas]:
+            if line.startswith(' CR '):
+                return line[0:9]        
+        
     def get_id_du_cas(self,indice_cas,verbose=False):
         """retourne le num de dossier"""
-        line=self.get_resume_cas(indice_cas)
+        line=self.get_id_nom(indice_cas)
         if verbose:
             print(line)
         return line[6:16]
@@ -206,8 +216,8 @@ est contenu dans une des liges du cas"""
         titrer("Résumé du fichier {}".format(self.filename))
         print("Nombre de cas : {}".format(str(len(self.cas))))
         print("Premier puis dernier dossiers")
-        print(self.get_resume_cas(0))
-        print(self.get_resume_cas(len(self.cas) - 1))
+        print(self.get_id_nom(0))
+        print(self.get_id_nom(len(self.cas) - 1))
         
     def afficherVersion(self):
         print("Version 13")
@@ -312,7 +322,7 @@ TRES INTERESSANT
 HCON=texte('HCON')
 res_attendus=regex(".*Rés.attendus :[^0].*")
 for cas in HCON.difference(res_attendus):
-	print(fichier.get_resume_cas(cas))
+	print(fichier.get_id_nom(cas))
 """
 
 
@@ -390,23 +400,42 @@ def print_list(lst):
 
     for i in lst:
         print(i)     
-        
-if __name__ == '__main__':
-    """Une étude générique"""
+
+def traitement_1():
+    """Un ensemble de 3 filtres usuels"""
     a = Encours()
     
     a.print_resume()    
+    # Dossier complets 
     print_list(a.get_resume_de_recherche_avec_regex(r'.*attendus :0.*',
                            label="Dossiers complet"))
-    # étude des cas avec problème d'impression
+    # Dossiers avec résultats attendus 
+    print_list(a.get_resume_de_recherche_avec_regex(r'.*attendus :[^0].*',
+                           label="Dossiers avec résultats attendus"))
+
+    # Dossiers avec problèmes d'impression
     regex_impression = r'.*\*.*'
     print_list(a.get_resume_de_recherche_avec_regex(regex_impression, 
                            label="Problème d'impression"))
     lst_cas_impression = a.chercher_regex(regex_impression)
-
     a.print_cas_multiples(list(lst_cas_impression))
-    
-    # print_list(a.get_resume_de_recherche_avec_regex(r'.*attendus :[^0].*',
-    #                       label="Dossiers avec résultats attendus"))
+    # On peut aussi imprimer le service
     
 
+        
+if __name__ == '__main__':
+    """Une étude générique"""
+    b = Encours()
+     # Dossiers avec problèmes d'impression
+    regex_impression = r'.*\*.*'
+    print_list(b.get_resume_de_recherche_avec_regex(regex_impression, 
+                           label="Problème d'impression"))
+    lst_cas_impression = b.chercher_regex(regex_impression)
+    b.print_cas_multiples(list(lst_cas_impression))
+    # On peut aussi imprimer le service
+    for cas in lst_cas_impression:
+        # print("Cas : {}".format(cas))
+        # sys.stdout.write(b.get_cor_du_cas(cas))'')
+        print("Cas : {}".format(cas),"\t", b.get_cor_du_cas(cas), b.get_id_nom(cas))
+              
+   
