@@ -17,8 +17,8 @@ v11 :
 v12 : j'ai commencé un rapport automatisé (fonction demo_de_rapport). travail dans train
 J'arrive à controler un bouton selon le modèle MVD.
 v13 : j'ai révisé la v12, qui fonctionne en mvc.
-v14 : devrai fonctionner en VMC
-
+v14 : devrait fonctionner en VMC
+v15 : Les listes restent triées.
 """
 import pdb, re, time, sys, datetime
 import tkinter as tk
@@ -102,7 +102,8 @@ dans une des lignes du cas"""
 
     def contient_regex(self, indice_cas, regex):
         """retourne True ou False selon qu'une expression régulière
-est contenu dans une des liges du cas"""
+est contenue dans une des liges du cas"""
+
         for la_ligne in self.cas[indice_cas]:
             p = re.compile(regex)
             m = p.match(la_ligne)
@@ -111,36 +112,43 @@ est contenu dans une des liges du cas"""
         return False
 
     def _chercher_indices_contenant_mot(self, mot, type='simple'):
+        """Retourne un set d'indice contenant un mot ou une regex."""
+        
         if type == 'simple':
-            indices=[cas for cas in range(len(self.cas)) if self.contient_mot(cas,mot)] 
+            indices = [cas for cas in range(len(self.cas)) \
+                     if self.contient_mot(cas,mot)] 
             return set(indices)
-        elif type=='regex':
-            indices=[cas for cas in range(len(self.cas)) if self.contient_regex(cas,mot)] 
+        elif type == 'regex':
+            indices = [cas for cas in range(len(self.cas)) \
+                     if self.contient_regex(cas,mot)]
             return set(indices)
         else:
             return None
         
     def chercher_regex(self,mot):
-        """Cherche les indice contenant une regex"""
+        """Cherche les indices contenant une regex.
+
+--> set"""
         return self._chercher_indices_contenant_mot(mot, type='regex')
 
     def chercher_texte(self,mot):
-        """Cherche les indice contenant un mot"""
+        """Cherche les indices contenant un mot"""
         return self._chercher_indices_contenant_mot(mot, type='simple')
 
-    def get_resume_de_recherche_avec_regex(self, regex,label='',limit = 20):
+    def get_resume_de_recherche_avec_regex(self, regex, label='', limit=20):
         """Résumé de recherche avec regex"""
-        buf=[]
-        attendus = self.chercher_regex(regex)
+        buf = []
+        lst_of_cas = list(self.chercher_regex(regex)) # unsorted set
+        lst_of_cas.sort()
         buf.append(label)
-        buf.append("J'ai trouvé {n} cas avec la regex {reg}".format(n=str(len(attendus)),
-                                                           reg=regex))
-        if len(attendus) <= limit:
-            for cas in attendus:
+        buf.append("J'ai trouvé {n} cas avec la regex {reg}".format(
+                               n=str(len(lst_of_cas)),reg=regex))
+        if len(lst_of_cas) <= limit:
+            for cas in lst_of_cas:
                 buf.append(self.get_id_nom(cas))
         else:
             buf.append("Extrait des {} premiers dossiers :".format(str(limit)))
-            for cas in list(attendus)[0:20]:
+            for cas in list(lst_of_cas)[0:20]:
                 buf.append(self.get_id_nom(cas))
             buf.append("... suite ...")
         return buf
@@ -409,30 +417,56 @@ def traitement_1():
     print()
     # Dossier complets 
     print_list(a.get_resume_de_recherche_avec_regex(r'.*attendus :0.*',
-                           label="Dossiers complet"))
+                           label="Dossiers complets"))
     print()
     # Dossiers avec résultats attendus 
     print_list(a.get_resume_de_recherche_avec_regex(r'.*attendus :[^0].*',
                            label="Dossiers avec résultats attendus"))
     print()
+
+    # Les lignes ci dessous devraient sans doute être incluses
+    # dans un fonction get_resume_de_recherche_avec_regex modifée.
+    
     # Dossiers avec problèmes d'impression
     regex_impression = r'.*\*.*'
     print_list(a.get_resume_de_recherche_avec_regex(regex_impression, 
-                           label="Problème d'impression"))
+                           label="Problèmes d'impression"))
     lst_cas_impression = a.chercher_regex(regex_impression)
+    lst_cas_impression = list(lst_cas_impression)
+    lst_cas_impression.sort()
     # Dédiéser pour les détails : 
     # a.print_cas_multiples(list(lst_cas_impression))
     # On peut aussi imprimer le service des dossiers avec pb impression
     print("détails :")
+    
     for cas in lst_cas_impression:
         print( a.get_cor_du_cas(cas), a.get_id_nom(cas))
-def presente_ce_programme():
+
+def traitement_2():
+    """Traitement expérimental pour corriger l'ordre de présentation.
+
+But : les dossiers sont présentés dans l'ordre chronologique."""
+    a = Encours()
+    
+    a.print_resume()
+    print()
+    # Dossier complets
+    regex = r'.*attendus :0.*'
+    lst_sorted_liste = list(a.chercher_regex(regex))
+    lst_sorted_liste.sort()
+    print_list(lst_sorted_liste)
+
+    
+
+def present_this_programm():
     """Affiche des données sur la date et la version"""
     print("Date de traitement : {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M")))
     print()
        
 if __name__ == '__main__':
     """Une étude générique"""
-    presente_ce_programme()
+    present_this_programm()
     traitement_1()
+
+    
 

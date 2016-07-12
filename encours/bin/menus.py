@@ -40,7 +40,7 @@ class MenuBar(Frame):
         toolMenuButton.pack(side=LEFT,padx=5)
         self.toolMenu=Menu(toolMenuButton)
         self.toolMenu.add_command(label='FTP_fi58_(amazilia)', underline=0)
-        self.toolMenu.add_command(label='FTP_fi59', underline=0,
+        self.toolMenu.add_command(label='FTP_fi59 (encours)', underline=0,
                                   command=bm_u_for_ftp.downloadfi59)
         self.toolMenu.add_command(label='FTP_fi60', underline=0,
                                   command=bm_u_for_ftp.downloadfi60)
