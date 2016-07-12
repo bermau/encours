@@ -20,7 +20,7 @@ v13 : j'ai révisé la v12, qui fonctionne en mvc.
 v14 : devrai fonctionner en VMC
 
 """
-import pdb, re, time, sys
+import pdb, re, time, sys, datetime
 import tkinter as tk
 
 from bm_u import titrer
@@ -33,7 +33,7 @@ def debug(msg):
     sys.stderr.write(msg+"\n")
 
 
-DEFAULT_INPUT = r"../../../data/input/"
+DEFAULT_INPUT = r"../../../../data/input/"
 
 class Encours():
 
@@ -405,37 +405,34 @@ def traitement_1():
     """Un ensemble de 3 filtres usuels"""
     a = Encours()
     
-    a.print_resume()    
+    a.print_resume()
+    print()
     # Dossier complets 
     print_list(a.get_resume_de_recherche_avec_regex(r'.*attendus :0.*',
                            label="Dossiers complet"))
+    print()
     # Dossiers avec résultats attendus 
     print_list(a.get_resume_de_recherche_avec_regex(r'.*attendus :[^0].*',
                            label="Dossiers avec résultats attendus"))
-
+    print()
     # Dossiers avec problèmes d'impression
     regex_impression = r'.*\*.*'
     print_list(a.get_resume_de_recherche_avec_regex(regex_impression, 
                            label="Problème d'impression"))
     lst_cas_impression = a.chercher_regex(regex_impression)
-    a.print_cas_multiples(list(lst_cas_impression))
-    # On peut aussi imprimer le service
-    
-
-        
+    # Dédiéser pour les détails : 
+    # a.print_cas_multiples(list(lst_cas_impression))
+    # On peut aussi imprimer le service des dossiers avec pb impression
+    print("détails :")
+    for cas in lst_cas_impression:
+        print( a.get_cor_du_cas(cas), a.get_id_nom(cas))
+def presente_ce_programme():
+    """Affiche des données sur la date et la version"""
+    print("Date de traitement : {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M")))
+    print()
+       
 if __name__ == '__main__':
     """Une étude générique"""
-    b = Encours()
-     # Dossiers avec problèmes d'impression
-    regex_impression = r'.*\*.*'
-    print_list(b.get_resume_de_recherche_avec_regex(regex_impression, 
-                           label="Problème d'impression"))
-    lst_cas_impression = b.chercher_regex(regex_impression)
-    b.print_cas_multiples(list(lst_cas_impression))
-    # On peut aussi imprimer le service
-    for cas in lst_cas_impression:
-        # print("Cas : {}".format(cas))
-        # sys.stdout.write(b.get_cor_du_cas(cas))'')
-        print("Cas : {}".format(cas),"\t", b.get_cor_du_cas(cas), b.get_id_nom(cas))
-              
-   
+    presente_ce_programme()
+    traitement_1()
+

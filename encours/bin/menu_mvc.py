@@ -1,5 +1,5 @@
 # file : menu_mvc
-"""Un essai d'application graphique pour gérer quelqeus commandes.
+"""Un essai d'application graphique pour gérer quelques commandes.
 
 But général :
 - lancer un ftp pour récupérer des fichiers.
@@ -24,6 +24,7 @@ LIMITE = None # sert pour la mise au point de l'importation de fichier
 
 from bm_u import titrer
 import bm_u,  encours
+import bm_u_for_ftp
 
 DEFAULT_INPUT = r"../input/"
 
@@ -107,7 +108,7 @@ class Controller():
         self.view.afficherVersion() # idem mais en mode graphique.
 
     def downloadFi58(self):
-        bm_u.downloadfiXX(58)
+        bm_u_for_ftp.downloadfiXX(58)
 
     def run(self):
         self.tkroot.title("Traitement des encours")

@@ -2,6 +2,6 @@
 
 FTP_ADRESS = 'serveur or adress name'
 FTP_USER = 'user'
-FTP_PW = 'password'
+# FTP_PW = 'password'
 TMP_REP = "/The repertory/"
 
