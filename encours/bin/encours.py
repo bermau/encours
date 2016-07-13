@@ -426,6 +426,7 @@ def traitement_1():
 
     # Les lignes ci dessous devraient sans doute être incluses
     # dans un fonction get_resume_de_recherche_avec_regex modifée.
+
     
     # Dossiers avec problèmes d'impression
     regex_impression = r'.*\*.*'
@@ -447,14 +448,22 @@ def traitement_2():
 
 But : les dossiers sont présentés dans l'ordre chronologique."""
     a = Encours()
-    
-    a.print_resume()
-    print()
-    # Dossier complets
-    regex = r'.*attendus :0.*'
-    lst_sorted_liste = list(a.chercher_regex(regex))
-    lst_sorted_liste.sort()
-    print_list(lst_sorted_liste)
+
+def get_date_from_id(id):
+    """Retourne la date à parti d'un ID  long
+
+    >>> get_date_from_id("6071160440")
+    '2016-07-11'
+
+
+    get_date_from_id(6071160440)
+    2016-07-11
+"""
+    day = id[3:5]
+    month = id[1:3]
+    year = id[0:1]
+    year = '201' + year
+    return('-'.join( [year, month, day]))
 
     
 
@@ -466,7 +475,17 @@ def present_this_programm():
 if __name__ == '__main__':
     """Une étude générique"""
     present_this_programm()
-    traitement_1()
+    a = Encours()
+    a.limite = a.tous[0:25]
+    for cas in a.limite:
+        long_id = a.get_id_du_cas(cas)
+        print(long_id, get_date_from_id(str(long_id)))
 
+    # comprehension list of dates.
+    lst_tout = [ get_date_from_id(a.get_id_du_cas(cas)) for cas in a.limite ]
     
-
+    print(lst_tout)
+    # with open("sortie.csv")
+    import doctest
+    doctest.testmod()
+        
