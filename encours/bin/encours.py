@@ -25,6 +25,7 @@ import tkinter as tk
 
 from bm_u import titrer
 import bm_u
+import configuration_file as Cf
 
 LIMITE=None # sert pour la mise au point de l'importation de fichier
 
@@ -33,7 +34,7 @@ def debug(msg):
     sys.stderr.write(msg+"\n")
 
 
-DEFAULT_INPUT = r"../../../../data/input/"
+DEFAULT_INPUT = Cf.DFAULT_INPUT_REP
 
 class Encours():
 
@@ -450,15 +451,23 @@ But : les dossiers sont présentés dans l'ordre chronologique."""
     a = Encours()
 
 def get_date_from_id(id):
-    """Retourne la date à parti d'un ID  long
+    """Retourne la date à parti d'un ID  long 
 
     >>> get_date_from_id("6071160440")
     '2016-07-11'
 
+    >>> get_date_from_id("60440")
+    ValueError: id must be 10 cars
 
-    get_date_from_id(6071160440)
-    2016-07-11
+    >>> get_date_from_id(6071160440)
+    ValueError: id must be 10 cars
+    
 """
+    try:
+        if len(id) != 10:
+             raise ValueError("id must be 10 cars")  
+    except:
+         ValueError("id must be 10 cars")
     day = id[3:5]
     month = id[1:3]
     year = id[0:1]
@@ -471,21 +480,26 @@ def present_this_programm():
     """Affiche des données sur la date et la version"""
     print("Date de traitement : {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M")))
     print()
-       
+
+def _test():
+    import dcotest
+    doctest.testmod()
+    
 if __name__ == '__main__':
     """Une étude générique"""
     present_this_programm()
+    
     a = Encours()
-    a.limite = a.tous[0:25]
-    for cas in a.limite:
-        long_id = a.get_id_du_cas(cas)
-        print(long_id, get_date_from_id(str(long_id)))
+    a.limite = a.tous
+##    for cas in a.limite:
+##        long_id = a.get_id_du_cas(cas)
+##        print(long_id, get_date_from_id(str(long_id)))
 
     # comprehension list of dates.
     lst_tout = [ get_date_from_id(a.get_id_du_cas(cas)) for cas in a.limite ]
-    
-    print(lst_tout)
+    from graph_encours import graphe
+    graphe(lst_tout)
+    print("Terminé")
+#     print(lst_tout)
     # with open("sortie.csv")
-    import doctest
-    doctest.testmod()
         
