@@ -19,6 +19,7 @@ J'arrive à controler un bouton selon le modèle MVD.
 v13 : j'ai révisé la v12, qui fonctionne en mvc.
 v14 : devrait fonctionner en VMC
 v15 : Les listes restent triées.
+v16 : Présente un trt graphique puis un texte de résumé. 
 """
 import pdb, re, time, sys, datetime
 import tkinter as tk
@@ -34,7 +35,7 @@ def debug(msg):
     sys.stderr.write(msg+"\n")
 
 
-DEFAULT_INPUT = Cf.DFAULT_INPUT_REP
+DEFAULT_INPUT = Cf.DEFAULT_INPUT_REP
 
 class Encours():
 
@@ -410,7 +411,7 @@ def print_list(lst):
     for i in lst:
         print(i)     
 
-def traitement_1():
+def trt_1():
     """Un ensemble de 3 filtres usuels"""
     a = Encours()
     
@@ -444,11 +445,17 @@ def traitement_1():
     for cas in lst_cas_impression:
         print( a.get_cor_du_cas(cas), a.get_id_nom(cas))
 
-def traitement_2():
-    """Traitement expérimental pour corriger l'ordre de présentation.
+def trt_graphe():
+    """Présente un graphique général des dossiers encours."""
 
-But : les dossiers sont présentés dans l'ordre chronologique."""
     a = Encours()
+    a.limite = a.tous
+    # comprehension list of dates.
+    lst_tout = [ get_date_from_id(a.get_id_du_cas(cas)) for cas in a.limite ]
+    from graph_encours import graphe
+    graphe(lst_tout)
+    print("Terminé")
+      
 
 def get_date_from_id(id):
     """Retourne la date à parti d'un ID  long 
@@ -473,9 +480,7 @@ def get_date_from_id(id):
     year = id[0:1]
     year = '201' + year
     return('-'.join( [year, month, day]))
-
-    
-
+ 
 def present_this_programm():
     """Affiche des données sur la date et la version"""
     print("Date de traitement : {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M")))
@@ -488,18 +493,6 @@ def _test():
 if __name__ == '__main__':
     """Une étude générique"""
     present_this_programm()
+    trt_graphe()
+    trt_1()
     
-    a = Encours()
-    a.limite = a.tous
-##    for cas in a.limite:
-##        long_id = a.get_id_du_cas(cas)
-##        print(long_id, get_date_from_id(str(long_id)))
-
-    # comprehension list of dates.
-    lst_tout = [ get_date_from_id(a.get_id_du_cas(cas)) for cas in a.limite ]
-    from graph_encours import graphe
-    graphe(lst_tout)
-    print("Terminé")
-#     print(lst_tout)
-    # with open("sortie.csv")
-        
